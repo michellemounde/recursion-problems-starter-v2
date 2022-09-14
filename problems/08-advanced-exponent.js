@@ -31,13 +31,14 @@ function advancedExponent(b, n) {
     return 1;
   }
 
-  const rootExp = advancedExponent(b, Math.floor(n / 2));
+  const halfExp = advancedExponent(b, Math.floor(n / 2));
 
   if (n % 2 === 0) {
-    return rootExp * rootExp;
+    return halfExp * halfExp;
   } else {
-    return b * rootExp * rootExp;
+    return b * halfExp * halfExp;
   }
+
 }
 
 console.log(advancedExponent(2, 0)); // 1

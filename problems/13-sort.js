@@ -21,25 +21,26 @@ Examples:
 
 function sort(nums, sorted = []) {
   // your code here
+
   if (nums.length === 0) {
     return sorted;
   }
 
-  let idx = 0;
-  let smallest = nums[0];
+  let idx = 0
+  let smallest = nums[idx];
 
-  for (let i = 0; i < nums.length; i++) {
-    let el = nums[i];
-    if (el < smallest) {
-      smallest = el;
+  nums.forEach((num, i) => {
+    if (num < smallest) {
       idx = i;
+      smallest = num;
     }
-  }
+  });
 
-  nums.splice(idx, 1);
+  nums = [...nums.slice(0, idx), ...nums.slice(idx + 1)];
   sorted.push(smallest);
 
   return sort(nums, sorted);
+
 }
 
 console.log(sort([4,1,6,3,1,7])); // [1, 1, 3, 4, 6, 7]

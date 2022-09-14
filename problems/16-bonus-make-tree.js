@@ -62,26 +62,33 @@ The call above should return the tree below:
 }
 
 ***********************************************************************/
-// Solution : figure this out later
-function rootId(nodes) {
-  return nodes.find((e) => e.parent === null).id;
-}
+// *Partly solve, arrived at with help
+// Was generating empty parent objects as well as complete parent objects
+function makeTree(categories, parent) {
 
-function childIds(categories, parentId) {
-  return categories.filter((c) => c.parent === parentId).map((c) => c.id);
-}
+    // Find the children for the current parent object
+    let children = categories.filter(category => category.parent === parent);
 
-function makeTree(categories, currentId) {
-  if (currentId === null) {
-    let rid = rootId(categories);
-    return { [rid]: makeTree(categories, rid) };
-  } else {
-    let tree = {};
-    childIds(categories, currentId).forEach((childId) => {
-      tree[childId] = makeTree(categories, childId);
-    });
-    return tree;
-  }
+    if (parent === null) {
+        // Find the starter object
+        const starter = categories.find(category => category.parent === parent);
+
+        // Make the starter object to hold all sub-objects
+        // Assuming only one starter object
+        return { [starter.id]: makeTree(categories, starter.id) };
+
+    } else {
+        // Create parent tree
+        const tree = {};
+
+        // Create children objects inside parent tree
+        children.forEach(child => {
+            tree[child.id] = makeTree(categories, child.id);
+        });
+
+        return tree;
+    }
+
 }
 
 // Example 1

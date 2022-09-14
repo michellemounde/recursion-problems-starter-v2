@@ -31,32 +31,30 @@ console.log(x[0] === y[0]) // true
 ***********************************************************************/
 
 // your code here
-// Not passing tests : go through this again
+
 function deepDup(arr) {
-  const duped = [];
+  let deep = [];
 
-  if (arr.length === 0) {
-    return duped;
+  if (!Array.isArray(arr)) {
+    return arr;
   }
 
-  const el1 = arr[0];
-  const unduped = [...arr.slice(1)];
+  deep = arr.map(el => deepDup(el));
 
-  if (Array.isArray(el1)) {
-    duped.push(...deepDup(el1), ...deepDup(unduped));
-  } else {
-    duped.push(el1, ...deepDup(unduped));
-  }
-
-  return duped;
+  return deep;
 }
 
 let arr = [[1], [2, [3]]];
-duped = deepDup(arr); // [[1], [2, [3]]]
+duped = deepDup(arr);
+console.log(duped);// [[1], [2, [3]]]
 console.log(arr[0] === duped[0]) // false
 console.log(arr[1] === duped[1]) // false
 console.log(arr[1][1] === duped[1][1]) // false
 
+let x = [1, 2, 3];
+dupedX = deepDup(x);
+console.log(dupedX);// [1, 2, 3]
+console.log(x === dupedX) // false
 /**************DO NOT MODIFY ANYTHING UNDER THIS LINE*****************/
 try {
   module.exports = deepDup;
