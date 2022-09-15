@@ -24,19 +24,21 @@ For each of the examples above, figure out how many times your code should
 be recursively calling `advancedExponent`. Find a way to visually see how many
 times `advancedExponent` is being recursively called.
 ***********************************************************************/
-
+// *Partly solved, arrived at with help
+// Help from: https://github.com/bryantt23/recursion-problems-starter-v2/blob/master/starter/problems/08-advanced-exponent.js
+// Was generating empty parent objects as well as complete parent objects
 function advancedExponent(b, n) {
   // your code here
   if (n === 0) {
     return 1;
   }
 
-  const halfExp = advancedExponent(b, Math.floor(n / 2));
+  const rootExp = advancedExponent(b, Math.floor(n / 2));
 
   if (n % 2 === 0) {
-    return halfExp * halfExp;
+    return rootExp * rootExp;
   } else {
-    return b * halfExp * halfExp;
+    return b * rootExp * rootExp;
   }
 
 }

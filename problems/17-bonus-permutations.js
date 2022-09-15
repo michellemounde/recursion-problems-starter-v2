@@ -13,27 +13,29 @@ permutations([1, 2, 3]) // [[1, 2, 3], [1, 3, 2],
 ***********************************************************************/
 
 // your code here
-// Solution : figure this out later
+// Understood solution Alvin Coderbyte
+// Solution from: https://www.youtube.com/watch?v=us0cYQXQpxg&list=PLV6y_jaV-lIMUcW0dsJRkhtgZR6NnI6bn&index=7
+
 function permutations(arr) {
   const perms = [];
 
-  const permute = (subArr, perm = []) => {
-    if (subArr.length === 0) {
-      perms.push(perm);
-    } else {
-      for (let i = 0; i < subArr.length; i++) {
-        let curr = subArr.slice();
-        let next = curr.splice(i, 1);
-        permute(curr.slice(), perm.concat(next))
-     }
-   }
+  if (arr.length === 0) {
+    return [ [] ];
   }
 
-  permute(arr);
+  const firstEl = arr[0];
+  const permsWithoutFirst = permutations(arr.slice(1));
+
+  permsWithoutFirst.forEach(perm => {
+    // Less than or equals to allow adding to the end of an array
+    for (let i = 0; i <= perm.length; i++) {
+      const permWithFirst = [...perm.slice(0, i), firstEl, ...perm.slice(i)];
+      perms.push(permWithFirst);
+    }
+  })
 
   return perms;
 }
-
 
 console.log(permutations([1, 2])) // [[1, 2], [2, 1]]
 console.log(permutations([1, 2, 3])) // [[1, 2, 3], [1, 3, 2],

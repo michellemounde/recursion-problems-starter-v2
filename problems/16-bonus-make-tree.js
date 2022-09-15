@@ -62,7 +62,8 @@ The call above should return the tree below:
 }
 
 ***********************************************************************/
-// *Partly solve, arrived at with help
+// *Partly solved, arrived at with help
+// Help from: https://stackoverflow.com/questions/69804238/trouble-with-a-recursive-problem-in-javascript-creating-a-tree-of-objects-based
 // Was generating empty parent objects as well as complete parent objects
 function makeTree(categories, parent) {
 

@@ -3,7 +3,7 @@ Write a recursive function that will find the best way to make change from a
 given set of coin values for a given amount of money. The set of coin values
 should default to using pennies (1 cent), nickels (5 cents), dimes (10 cents),
 and quarters (25 cents). Return `null` if there are no possible ways to make
-change for the given target amount.
+change for the given amount amount.
 
 Examples:
 
@@ -38,14 +38,14 @@ new method:
 
 - Iterate over each coin.
 - Grab only one of that one coin and recursively call `makeBetterChange` on the
-  remainder using coins less than or equal to the current coin.
+  remainder using usableCoins less than or equal to the current coin.
 - Add the single coin to the change returned by the recursive call. This will be
   a possible solution, but maybe not the best one.
 - Keep track of the best solution and return it at the end.
 
-N.B. Don't generate every possible permutation of coins and then compare them.
+N.B. Don't generate every possible permutation of usableCoins and then compare them.
 Remember that a permutation is not the same thing as a combination - we will
-need to check every combination of coins that add up to our target, we just
+need to check every combination of usableCoins that add up to our amount, we just
 don't want to check the same combination in different orders. If you get stuck
 you can start by writing a solution that calculates and compares all of the
 permutations without storing them in an array. Then go back and refactor your
@@ -56,80 +56,95 @@ combinations.
 function greedyMakeChange(target, coins = [25, 10, 5, 1]) {
   // no tests for greedyMakeChange so make sure to test this on your own
   // your code here
-  let change = [];
-  const unchecked = coins.slice(1);
-  let remainder;
 
-  if (coins.length === 0) {
+  function makeChange(amount, usableCoins) {
+    let change = [];
+    const unchecked = usableCoins.slice(1);
+    let remainder;
+
+    if (usableCoins.length === 0 && amount > 0) {
+      change.push(null);
+      return change;
+    } else if (usableCoins.length === 0) {
+      return change;
+    }
+
+    const coin1 = usableCoins[0];
+    const times = Math.floor(amount / coin1);
+
+    if (times < 1) {
+      change.push(...makeChange(amount, unchecked));
+    } else {
+      remainder = amount - (coin1 * times);
+      change = Array(times).fill(coin1);
+      change.push(...makeChange(remainder, unchecked));
+    }
+
     return change;
   }
 
-  const coin1 = coins[0];
-  const times = Math.floor(target / coin1);
+  const greedyChange = makeChange(target, coins);
 
-  if (times < 1) {
-    change.push(...greedyMakeChange(target, unchecked));
-  } else if (times === 1){
-    remainder = Math.floor(target - coin1);
-    change.push(coin1, ...greedyMakeChange(remainder, unchecked));
-  } else {
-    remainder = target - (coin1 * times);
-    change = Array(times).fill(coin1);
-    change.push(...greedyMakeChange(remainder, unchecked));
-  }
-
-  if (!change) {
-    return null;
-  }
-
-  return change;
+  return greedyChange.includes(null) ? null : greedyChange;
 }
 
-// Solution : go through this later
+// Understood solution and modified
+// Solution from: https://stackoverflow.com/questions/32643357/implementing-a-recursive-coin-change-function-in-javascript
 function makeBetterChange(target, coins = [25, 10, 5, 1]) {
   // your code here
-  if (target === 0) {
-    return [0, []];
-  }
+  const sortedCoins = coins.sort((a, b) => b - a);
 
-  if (coins.length === 0 && target > 0) {
-    return [Infinity, []];
-  }
+  function makeChangeWithCount(amount, usableCoins) {
+    if (amount === 0) {
+      return [0, []];
+    }
 
-  if (coins[0] > target) {
-    return makeBetterChange(target, coins.slice(1));
-  } else {
-    let loseIt = makeBetterChange(target, coins.slice(1));  // just one call of change
-    let useIt = makeBetterChange(target - coins[0], coins); // just one call of change
-    if (loseIt[0] < 1 + useIt[0]) {
-        return loseIt;
+    if (usableCoins.length === 0 && amount > 0) {
+      return [Infinity, []];
+    }
+
+    if (usableCoins[0] > amount) {
+      return makeChangeWithCount(amount, usableCoins.slice(1));
     } else {
-        return [1 + useIt[0], useIt[1].concat(coins[0])];
+      let loseIt = makeChangeWithCount(amount, usableCoins.slice(1));
+      let useIt = makeChangeWithCount(amount - usableCoins[0], usableCoins);
+
+      // If losing it leads to using less usableCoins than using it does then lose it
+      if(loseIt[0] < 1 + useIt[0]) {
+        return loseIt;
+      } else {
+        // Else use it
+        useIt[1].unshift(usableCoins[0])
+        return [1 + useIt[0], useIt[1]];
+      }
     }
   }
+
+  const changeWithCount = makeChangeWithCount(target, sortedCoins);
+
+  return changeWithCount[0] === Infinity ? null: changeWithCount[1];
 }
 
-/*
-greedyMakeChange
+// greedyMakeChange
 
-console.log(greedyMakeChange(21)); // [10, 10, 1]
-console.log(greedyMakeChange(75)); // [25, 25, 25]
-console.log(greedyMakeChange(33, [15, 3])); // [15, 15, 3]
+console.log(greedyMakeChange(21)); // [ 10, 10, 1 ]
+console.log(greedyMakeChange(75)); // [ 25, 25, 25 ]
+console.log(greedyMakeChange(33, [15, 3])); // [ 15, 15, 3 ]
 console.log(greedyMakeChange(34, [15, 3])); // null
-console.log(greedyMakeChange(24, [10, 7, 1])) // [10, 10, 1, 1, 1, 1]
-*/
+console.log(greedyMakeChange(24, [10, 7, 1])) // [ 10, 10, 1, 1, 1, 1 ]
+
 
 // makeBetterChange
 
-console.log(makeBetterChange(21)); // [ 3, [ 1, 10, 10 ] ]
-console.log(makeBetterChange(75)); // [ 3, [ 25, 25, 25 ] ]
-console.log(makeBetterChange(33, [15, 3])); // [ 3, [ 3, 15, 15 ] ]
-console.log(makeBetterChange(34, [15, 3])); // null // => [ Infinity, [ 3, 15, 15 ] ]
-console.log(makeBetterChange(24, [10, 7, 1])) // [ 3, [ 7, 7, 10 ] ]]
-console.log(makeBetterChange(12, [9, 6, 1]));                   // [2, [6, 6]]
-console.log(makeBetterChange(48, [1, 5, 10, 25, 50]));          // [6, [25, 10, 10, 1, 1, 1]]
-console.log(makeBetterChange(48, [1, 7, 24, 42]));              // [2, [24, 24]]
-console.log(makeBetterChange(189, [1, 77, 17, 63, 92, 8, 14])); // [3, [63, 63, 63]]
+console.log(makeBetterChange(21)); // [ 10, 10, 1 ]
+console.log(makeBetterChange(75)); // [ 25, 25, 25 ]
+console.log(makeBetterChange(33, [15, 3])); // [ 15, 15, 3 ]
+console.log(makeBetterChange(34, [15, 3])); // null
+console.log(makeBetterChange(24, [10, 7, 1])) // [ 10, 7, 7 ]
+console.log(makeBetterChange(12, [9, 6, 1]));                   // [ 6, 6 ]
+console.log(makeBetterChange(48, [1, 5, 10, 25, 50]));          // [ 25, 10, 10, 1, 1, 1 ]
+console.log(makeBetterChange(48, [1, 7, 24, 42]));              // [ 24, 24 ]
+console.log(makeBetterChange(189, [1, 77, 17, 63, 92, 8, 14])); // [ 63, 63, 63 ]
 
 /**************DO NOT MODIFY ANYTHING UNDER THIS LINE*****************/
 try {

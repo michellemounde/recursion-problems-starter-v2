@@ -13,6 +13,7 @@ Hint: For subsets([1, 2, 3]), there are two kinds of subsets:
 
 // your code here
 // *Understood Solution for subsets creation recursively, figured iterative solution
+// Solution from: https://leetcode.com/problems/subsets/discuss/299665/Recursive-JavaScript-solution
 function subsets(nums) {
   // Powerset is a set which contains all subsets of the given set
   const powerset = [];
